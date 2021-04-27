@@ -83,7 +83,7 @@ def get_coinswitch_coins_value():
             {
                 "name": coin["name"],
                 "price": float(coin["cmc_coin"]["rate_inr"]),
-                "change24h": float(coin["cmc_coin"]["rate_inr"]),
+                "change24h": float(coin["cmc_coin"]["change_day"]),
                 "coinswitch": True,
                 "otherdata": json.dumps(coin)
             }
@@ -102,5 +102,8 @@ def send_crypto_updates_to_server():
         print(res.text)
 
 while(True):
-    send_crypto_updates_to_server()
+    try:
+        send_crypto_updates_to_server()
+    except Exception as e:
+        print(e)
     time.sleep(60)
