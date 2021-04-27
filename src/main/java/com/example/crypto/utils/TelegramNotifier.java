@@ -1,5 +1,8 @@
 package com.example.crypto.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.lang.InterruptedException;
 import java.net.http.HttpClient;
@@ -24,6 +27,10 @@ public class TelegramNotifier {
     private final TelegramMessageResponseRepository telegramMessageResponseRepository;
     private final SubscribeCryptoRespository subscribeCryptoRespository;
 
+    Logger logger = LoggerFactory.getLogger(TelegramNotifier.class);
+
+    
+
     public TelegramNotifier(TelegramMessageResponseRepository tmrrepository, SubscribeCryptoRespository screpository) {
         this.telegramMessageResponseRepository = tmrrepository;
         this.subscribeCryptoRespository = screpository;
@@ -32,21 +39,22 @@ public class TelegramNotifier {
     public void checkAndNotify(String cc, Double price) {
         List<SubscribeCrypto> scs = subscribeCryptoRespository.findByCurrency(cc);
 
-        System.out.printf("Checking price diffrence for %s and current price %s \n", cc, price);
+        logger.info(String.format("Checking price diffrence for %s and current price %s \n", cc, price));
 
         for(Integer i=0; i<scs.size(); i++) {
                 SubscribeCrypto sc = scs.get(i);
                 
                 Double expectedIncreaseInPrice = sc.getBoughtIn() + (sc.getBoughtIn()*sc.getNotifyAt())%100;
-                System.out.printf("Expected increase in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedIncreaseInPrice);
+                logger.info(String.format("Expected increase in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedIncreaseInPrice));
                 
                 Double expectedDecreaseInPrice = sc.getBoughtIn() - (sc.getBoughtIn()*sc.getNotifyAt())%100;
-                System.out.printf("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice);
+                logger.info(String.format("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice));
 
                 if (expectedIncreaseInPrice <= price || expectedDecreaseInPrice >= price) {
                         String message = String.format("Currency %s has reached expected change, current price: %s", cc, price);
                         try {
                                 sendMessage(message);
+                                sendWhatsappMessage(message);
                         } catch (IOException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -83,6 +91,33 @@ public class TelegramNotifier {
         TelegramMessageResponse tmr = new TelegramMessageResponse();
         tmr.setResponse(response.body().toString());
         telegramMessageResponseRepository.save(tmr);
+
+    }
+
+    public void sendWhatsappMessage(String message) throws IOException, InterruptedException {
+
+            
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))
+                .version(HttpClient.Version.HTTP_2)
+                .build();
+
+        UriBuilder builder = UriBuilder
+                .fromUri("https://api.callmebot.com/whatsapp.php")
+                .queryParam("phone", "+917073325643")
+                .queryParam("text", message)
+                .queryParam("apikey", "679642");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(builder.build())
+                .timeout(Duration.ofSeconds(5))
+                .build();
+
+        HttpResponse<String> response = client
+          .send(request, HttpResponse.BodyHandlers.ofString());
+
+        logger.info(String.format("WHATSAPP:: api response %s", response.body().toString()));
 
     }
 }

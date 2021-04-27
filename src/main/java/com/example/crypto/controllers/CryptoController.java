@@ -1,7 +1,9 @@
 package com.example.crypto.controllers;
 
-import java.io.IOException;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +28,8 @@ public class CryptoController {
     private final CryptoCurrencyTrailRepository cryptoCurrencyTrailRepository;
     private final TelegramMessageResponseRepository telegramMessageResponseRepository;
     private final SubscribeCryptoRespository subscribeCryptoRespository;
+
+    Logger logger = LoggerFactory.getLogger(CryptoController.class);
 
     CryptoController(CryptoCurrencyRepository ccrepository, CryptoCurrencyTrailRepository cctrepository,
         TelegramMessageResponseRepository tmrrepository, SubscribeCryptoRespository screpository) {
@@ -59,7 +63,7 @@ public class CryptoController {
         if (cco != null) {
             cc = cco;
         } else {
-            System.out.printf("No Crypto Currency found with name %s \n", data.getName());
+            logger.info(String.format("No Crypto Currency found with name %s \n", data.getName()));
         }
 
         cc.setDisplayName(displayName);

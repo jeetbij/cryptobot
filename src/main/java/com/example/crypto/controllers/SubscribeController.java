@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.crypto.dtos.SubscribeCryptoDTO;
@@ -20,6 +23,8 @@ public class SubscribeController {
 
     private final SubscribeCryptoRespository subscribeCryptoRespository;
     private final TelegramMessageResponseRepository telegramMessageResponseRepository;
+
+    Logger logger = LoggerFactory.getLogger(SubscribeController.class);
 
     SubscribeController(SubscribeCryptoRespository repository, TelegramMessageResponseRepository tmsrepository) {
         this.subscribeCryptoRespository = repository;
@@ -48,7 +53,7 @@ public class SubscribeController {
             sc.setNotifyAt(notifyAt);
             sc.setActive(true);
         } else {
-            System.out.printf("%s Crypto Currency Subscription not found for user %s \n", cryptoCurrency, user);
+            logger.info(String.format("%s Crypto Currency Subscription not found for user %s \n", cryptoCurrency, user));
             sc.setUser(user);
             sc.setCryptoCurrency(cryptoCurrency);
             sc.setBoughtIn(boughtIn);
