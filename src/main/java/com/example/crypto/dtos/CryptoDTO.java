@@ -12,6 +12,10 @@ public class CryptoDTO {
 
     String currency;
 
+    Boolean coinswitch;
+
+    String otherdata;
+
     public Integer getId() {
         return id;
     }
@@ -50,6 +54,22 @@ public class CryptoDTO {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public Boolean getCoinswitch() {
+        return coinswitch;
+    }
+
+    public void setCoinswitch(Boolean coinswitch) {
+        this.coinswitch = coinswitch;
+    }
+
+    public String getOtherdata() {
+        return otherdata;
+    }
+
+    public void setOtherdata(String otherdata) {
+        this.otherdata = otherdata;
     }
 
 }

@@ -1,6 +1,7 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+import time
 
 
 # Base url to scrap
@@ -71,15 +72,35 @@ def get_dollar_value_in_rupees(headers):
     return dollar_value
 
 
+def get_coinswitch_coins_value():
+    API = "https://coinswitch.co/proxy/in/api/v1/coins"
+
+    res = requests.get(API, headers=HEADERS)
+    coins = json.loads(res.text)
+    crypto_list = []
+    for coin in coins:
+        crypto_list.append(
+            {
+                "name": coin["name"],
+                "price": float(coin["cmc_coin"]["rate_inr"]),
+                "change24h": float(coin["cmc_coin"]["rate_inr"]),
+                "coinswitch": True,
+                "otherdata": json.dumps(coin)
+            }
+        )
+
+    return crypto_list
 
 def send_crypto_updates_to_server():
     
     ccs = scrap_crypto_price(BASE_URL, HEADERS)
+    ccs = get_coinswitch_coins_value()
 
     for cc in ccs:
         cc["currency"] = "INR"
-        print(cc)
         res = requests.post(CRYPTO_BOT_SERVER + "/create", headers=HEADERS, data=json.dumps(cc))
         print(res.text)
 
-print(send_crypto_updates_to_server())
+while(True):
+    send_crypto_updates_to_server()
+    time.sleep(60)

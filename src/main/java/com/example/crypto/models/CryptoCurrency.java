@@ -3,6 +3,7 @@ package com.example.crypto.models;
 import java.util.List;
 import java.util.ArrayList;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,11 @@ public class CryptoCurrency {
 
   @NotNull
   private String currency;
+
+  private Boolean coinswitch;
+
+  @Column(columnDefinition="TEXT")
+  private String otherdata;
 
   @OneToMany(mappedBy = "cryptoCurrency")
   private List<CryptoCurrencyTrail> cryptoCurrencyTrail = new ArrayList<>();
@@ -83,5 +89,21 @@ public class CryptoCurrency {
 
   public void setCurrency(String currency) {
     this.currency = currency;
+  }
+
+  public Boolean getCoinswitch() {
+    return coinswitch;
+  }
+
+  public void setCoinswitch(Boolean coinswitch) {
+    this.coinswitch = coinswitch;
+  }
+
+  public String getOtherdata() {
+    return otherdata;
+  }
+
+  public void setOtherdata(String otherdata) {
+    this.otherdata = otherdata;
   }
 }

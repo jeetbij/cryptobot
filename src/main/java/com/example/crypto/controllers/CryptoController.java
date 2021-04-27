@@ -52,6 +52,8 @@ public class CryptoController {
         Double price = data.getPrice();
         Double change24h = data.getChange24h();
         String currency = data.getCurrency();
+        Boolean coinswitch = data.getCoinswitch();
+        String otherdata = data.getOtherdata();
 
         CryptoCurrency cco = cryptoCurrencyRepository.findByName(name);
         if (cco != null) {
@@ -65,6 +67,8 @@ public class CryptoController {
         cc.setPrice(price);
         cc.setChange24h(change24h);
         cc.setCurrency(currency);
+        cc.setCoinswitch(coinswitch);
+        cc.setOtherdata(otherdata);
         cryptoCurrencyRepository.save(cc);
 
         cct.setCryptoCurrency(cc);
