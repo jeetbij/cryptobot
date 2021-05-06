@@ -51,10 +51,10 @@ public class TelegramNotifier {
                 logger.info(String.format("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice));
 
                 if (expectedIncreaseInPrice <= price || expectedDecreaseInPrice >= price) {
-                        String message = String.format("Currency %s has reached expected change, current price: %s", cc, price);
+                        String message = String.format("Currency %s, Price: %s\n", cc, price);
                         try {
                                 sendMessage(message);
-                                sendWhatsappMessage(message);
+                                // sendWhatsappMessage(message);
                         } catch (IOException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
