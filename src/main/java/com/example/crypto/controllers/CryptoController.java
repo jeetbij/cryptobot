@@ -1,5 +1,7 @@
 package com.example.crypto.controllers;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -8,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.crypto.dtos.CryptoDTO;
+import com.example.crypto.dtos.PriceSummaryDTO;
 import com.example.crypto.models.CryptoCurrency;
 import com.example.crypto.models.CryptoCurrencyTrail;
 import com.example.crypto.repository.CryptoCurrencyRepository;
@@ -91,6 +94,23 @@ public class CryptoController {
     @GetMapping("/all")
     List<CryptoCurrency> all() {
         return cryptoCurrencyRepository.findAll();
+    }
+
+    @GetMapping("/price-history")
+    PriceSummaryDTO priceHistory() {
+        LocalDateTime today = LocalDateTime.now();
+
+        CryptoCurrency cc = cryptoCurrencyRepository.findByName("dogecoin");
+
+        List<CryptoCurrencyTrail> cryptos = cryptoCurrencyTrailRepository.get7DayData(today.minusDays(20), cc);
+
+        PriceSummaryDTO ps = new PriceSummaryDTO();
+        ps.setName(cc.getName());
+        ps.setDisplayName(cc.getDisplayName());
+        ps.setChange24h(cc.getChange24h());
+        ps.setPriceHistory(cryptos);
+
+        return ps;
     }
 
 }
