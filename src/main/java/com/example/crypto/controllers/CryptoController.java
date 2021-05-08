@@ -21,6 +21,7 @@ import com.example.crypto.utils.TelegramNotifier;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -96,13 +97,12 @@ public class CryptoController {
         return cryptoCurrencyRepository.findAll();
     }
 
-    @GetMapping("/price-history")
-    PriceSummaryDTO priceHistory() {
+    @GetMapping("/price-history/{name}")
+    PriceSummaryDTO priceHistory(@PathVariable String name) {
         LocalDateTime today = LocalDateTime.now();
-
-        CryptoCurrency cc = cryptoCurrencyRepository.findByName("dogecoin");
-
-        List<CryptoCurrencyTrail> cryptos = cryptoCurrencyTrailRepository.get7DayData(today.minusDays(20), cc);
+        
+        CryptoCurrency cc = cryptoCurrencyRepository.findByName(name);
+        List<CryptoCurrencyTrail> cryptos = cryptoCurrencyTrailRepository.get7DayData(today.minusDays(7), cc);
 
         PriceSummaryDTO ps = new PriceSummaryDTO();
         ps.setName(cc.getName());
