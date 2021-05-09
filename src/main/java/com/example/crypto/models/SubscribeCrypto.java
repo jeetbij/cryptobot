@@ -21,6 +21,8 @@ public class SubscribeCrypto {
   @NotNull
   private String user;
 
+  private String telegramUserId;
+
   private String cryptoCurrency;
 
   private Boolean active;
@@ -48,6 +50,14 @@ public class SubscribeCrypto {
 
   public void setUser(String user) {
     this.user = user;
+  }
+
+  public String getTelegramUserId() {
+    return telegramUserId;
+  }
+
+  public void setTelegramUserId(String userId) {
+    this.telegramUserId = userId;
   }
 
   public String getCryptoCurrency() {

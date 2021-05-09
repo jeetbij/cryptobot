@@ -22,6 +22,7 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
 
     //Bot information
     private final String CRYPTO_BOT_TOKEN = "1721251982:AAGhhBO5RRQb7sCG4hE9yXz2cuB90uPqxe0";
+    // private final String CRYPTO_BOT_TOKEN = "1729919631:AAExAz2WRfbmWMFsNzRfBZBsHxXD9KDlCMc";
     private final String CRYPTO_BOT_NAME = "CryptoBot";
 
     //Commands
@@ -57,7 +58,11 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
             reply.setChatId(chatId);
             // message.setText(update.getMessage().getText());
 
+            String userId = update.getMessage().getChat().getId().toString();
             String userName = update.getMessage().getChat().getUserName();
+            if (userName == null) {
+                userName = userId;
+            }
             String message = update.getMessage().getText();
             String[] messages = message.split(" ");
 
@@ -79,7 +84,7 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
                         createReplyMessage(reply, String.format(INVALID_CURRENCY_CHOICE, messages[1]));
                         break;
                     }
-                    Boolean subscribed = subscribe(currency, userName, chatId);
+                    Boolean subscribed = subscribe(currency, userName, userId, chatId);
                     if (subscribed) {
                         createReplyMessage(reply, String.format(SUBSCRIBED_MESSAGE, currency));
                     } else {
@@ -172,7 +177,7 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
         }
     }
 
-    private Boolean subscribe(String currency, String user, String chatId) {
+    private Boolean subscribe(String currency, String user, String userId, String chatId) {
         
         SubscribeCrypto sc = new SubscribeCrypto();
         Optional<SubscribeCrypto> sco =  subscribeCryptoService.findByUserAndCurrency(user, currency);
@@ -184,6 +189,7 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
         sc.setActive(true);
         sc.setCryptoCurrency(currency);
         sc.setTelegramChatId(chatId);
+        sc.setTelegramUserId(userId);
         subscribeCryptoService.save(sc);
 
         return true;
