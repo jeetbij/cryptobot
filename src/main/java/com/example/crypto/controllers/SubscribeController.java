@@ -3,6 +3,7 @@ package com.example.crypto.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,23 +14,20 @@ import com.example.crypto.dtos.SubscribeCryptoDTO;
 import com.example.crypto.models.SubscribeCrypto;
 import com.example.crypto.repository.SubscribeCryptoRespository;
 import com.example.crypto.repository.TelegramMessageResponseRepository;
+import com.example.crypto.services.ISubscribeCryptoService;
 import com.example.crypto.utils.TelegramNotifier;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 public class SubscribeController {
 
-    private final SubscribeCryptoRespository subscribeCryptoRespository;
-    private final TelegramMessageResponseRepository telegramMessageResponseRepository;
-
     Logger logger = LoggerFactory.getLogger(SubscribeController.class);
 
-    SubscribeController(SubscribeCryptoRespository repository, TelegramMessageResponseRepository tmsrepository) {
-        this.subscribeCryptoRespository = repository;
-        this.telegramMessageResponseRepository = tmsrepository;
-    }
+    @Autowired
+    ISubscribeCryptoService subscribeCryptoRespository;
 
     @PostMapping("/subscribe")
     List<SubscribeCrypto> newSubscribeCrypto(@RequestBody SubscribeCryptoDTO data) {
@@ -46,9 +44,9 @@ public class SubscribeController {
         cryptoCurrency = cryptoCurrency.toLowerCase().strip().replaceAll(" ", "_");
         SubscribeCrypto sc = new SubscribeCrypto();
 
-        SubscribeCrypto sco = subscribeCryptoRespository.findByUserAndCurrency(user, cryptoCurrency);
-        if (sco != null) {
-            sc = sco;
+        Optional<SubscribeCrypto> sco = subscribeCryptoRespository.findByUserAndCurrency(user, cryptoCurrency);
+        if (!sco.isEmpty()) {
+            sc = sco.get();
             sc.setBoughtIn(boughtIn);
             sc.setNotifyAt(notifyAt);
             sc.setActive(true);
@@ -64,16 +62,16 @@ public class SubscribeController {
         subscribeCryptoRespository.save(sc);
         scl.add(sc);
         
-        try {
-            String message = String.format("User: %s, Subscribed to: %s, Bought in: %s, Notify at: %s", user, data.getCryptoCurrency(), boughtIn, notifyAt);
-            new TelegramNotifier(telegramMessageResponseRepository, subscribeCryptoRespository).sendMessage(message);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // try {
+        //     String message = String.format("User: %s, Subscribed to: %s, Bought in: %s, Notify at: %s", user, data.getCryptoCurrency(), boughtIn, notifyAt);
+        //     new TelegramNotifier().sendMessage(message);
+        // } catch (IOException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // } catch (InterruptedException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
         return scl;
     }
 

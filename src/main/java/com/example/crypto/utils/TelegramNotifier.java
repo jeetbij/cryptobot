@@ -10,13 +10,20 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.core.UriBuilder;
 
+import com.example.crypto.models.CryptoCurrency;
 import com.example.crypto.models.SubscribeCrypto;
 import com.example.crypto.models.TelegramMessageResponse;
-import com.example.crypto.repository.SubscribeCryptoRespository;
-import com.example.crypto.repository.TelegramMessageResponseRepository;
+import com.example.crypto.services.BeanUtilService;
+import com.example.crypto.services.CryptoCurrencyService;
+import com.example.crypto.services.ICryptoCurrencyService;
+import com.example.crypto.services.ISubscribeCryptoService;
+import com.example.crypto.services.ITelegramMessageResponseService;
+import com.example.crypto.services.SubscribeCryptoService;
+import com.example.crypto.services.TelegramMessageResponseService;
 
 
 public class TelegramNotifier {
@@ -24,49 +31,51 @@ public class TelegramNotifier {
     private final String CRYPTO_BOT_TOKEN = "1721251982:AAGhhBO5RRQb7sCG4hE9yXz2cuB90uPqxe0";
     private final String CRYPTO_UPDATES_GROUP_CHAT_ID = "-1001162020470";
 
-    private final TelegramMessageResponseRepository telegramMessageResponseRepository;
-    private final SubscribeCryptoRespository subscribeCryptoRespository;
+    private final String PRICE_UPDATE_MESSAGE = "**%s** -\n\nCurrent Price - %s\nChange(24h in percentage) - %s";
+
+    ITelegramMessageResponseService telegramMessageResponseRepository = BeanUtilService.getBean(TelegramMessageResponseService.class);
+    ISubscribeCryptoService subscribeCryptoRespository = BeanUtilService.getBean(SubscribeCryptoService.class);
+    ICryptoCurrencyService cryptoCurrencyRespository = BeanUtilService.getBean(CryptoCurrencyService.class);
 
     Logger logger = LoggerFactory.getLogger(TelegramNotifier.class);
 
     
-
-    public TelegramNotifier(TelegramMessageResponseRepository tmrrepository, SubscribeCryptoRespository screpository) {
-        this.telegramMessageResponseRepository = tmrrepository;
-        this.subscribeCryptoRespository = screpository;
-    }
-
-    public void checkAndNotify(String cc, Double price) {
+    public void checkAndNotify(String cc) {
         List<SubscribeCrypto> scs = subscribeCryptoRespository.findByCurrency(cc);
+        Optional<CryptoCurrency> cco = cryptoCurrencyRespository.findByName(cc);
+        CryptoCurrency cryptoCurrency = cco.get();
 
-        logger.info(String.format("Checking price diffrence for %s and current price %s \n", cc, price));
+        // logger.info(String.format("Checking price diffrence for %s and current price %s \n", cc, price));
+
+        logger.info(String.format("Sending notification for %s and current price %s \n", cryptoCurrency.getDisplayName(), cryptoCurrency.getPrice()));
 
         for(Integer i=0; i<scs.size(); i++) {
                 SubscribeCrypto sc = scs.get(i);
                 
-                Double expectedIncreaseInPrice = sc.getBoughtIn() + (sc.getBoughtIn()*sc.getNotifyAt())%100;
-                logger.info(String.format("Expected increase in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedIncreaseInPrice));
+                // Double expectedIncreaseInPrice = sc.getBoughtIn() + (sc.getBoughtIn()*sc.getNotifyAt())%100;
+                // logger.info(String.format("Expected increase in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedIncreaseInPrice));
                 
-                Double expectedDecreaseInPrice = sc.getBoughtIn() - (sc.getBoughtIn()*sc.getNotifyAt())%100;
-                logger.info(String.format("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice));
-
-                if (expectedIncreaseInPrice <= price || expectedDecreaseInPrice >= price) {
-                        String message = String.format("Currency %s, Price: %s\n", cc, price);
-                        try {
-                                sendMessage(message);
-                                // sendWhatsappMessage(message);
-                        } catch (IOException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                        } catch (InterruptedException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                        } 
+                // Double expectedDecreaseInPrice = sc.getBoughtIn() - (sc.getBoughtIn()*sc.getNotifyAt())%100;
+                // logger.info(String.format("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice));
+                if(sc.getTelegramChatId() == null) {
+                        continue;
                 }
+                try {
+                        String message = String.format(PRICE_UPDATE_MESSAGE, cryptoCurrency.getDisplayName(), cryptoCurrency.getPrice(), cryptoCurrency.getChange24h());
+                        logger.info(String.format("TELEGRAM:: message - %s, username - %s, chatId - %s\n", message, sc.getUser(), sc.getTelegramChatId()));
+                        sendMessage(message, sc.getTelegramChatId());
+                        // sendWhatsappMessage(message);
+                } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                } 
         }
     }
 
-    public void sendMessage(String message) throws IOException, InterruptedException {
+    public void sendMessage(String message, String chatId) throws IOException, InterruptedException {
 
         HttpClient client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
@@ -76,7 +85,7 @@ public class TelegramNotifier {
         UriBuilder builder = UriBuilder
                 .fromUri("https://api.telegram.org")
                 .path("/{token}/sendMessage")
-                .queryParam("chat_id", CRYPTO_UPDATES_GROUP_CHAT_ID)
+                .queryParam("chat_id", chatId)
                 .queryParam("text", message);
 
         HttpRequest request = HttpRequest.newBuilder()

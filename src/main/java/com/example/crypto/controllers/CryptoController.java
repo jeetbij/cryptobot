@@ -3,6 +3,7 @@ package com.example.crypto.controllers;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,14 @@ import com.example.crypto.repository.CryptoCurrencyRepository;
 import com.example.crypto.repository.CryptoCurrencyTrailRepository;
 import com.example.crypto.repository.SubscribeCryptoRespository;
 import com.example.crypto.repository.TelegramMessageResponseRepository;
+import com.example.crypto.services.ICryptoCurrencyService;
+import com.example.crypto.services.ICryptoCurrencyTrailService;
+import com.example.crypto.services.ISubscribeCryptoService;
+import com.example.crypto.services.ITelegramMessageResponseService;
 import com.example.crypto.utils.TelegramNotifier;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,20 +34,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class CryptoController {
 
-    private final CryptoCurrencyRepository cryptoCurrencyRepository;
-    private final CryptoCurrencyTrailRepository cryptoCurrencyTrailRepository;
-    private final TelegramMessageResponseRepository telegramMessageResponseRepository;
-    private final SubscribeCryptoRespository subscribeCryptoRespository;
+    @Autowired
+    private ICryptoCurrencyService cryptoCurrencyRepository;
+    @Autowired
+    private ICryptoCurrencyTrailService cryptoCurrencyTrailRepository;
 
     Logger logger = LoggerFactory.getLogger(CryptoController.class);
-
-    CryptoController(CryptoCurrencyRepository ccrepository, CryptoCurrencyTrailRepository cctrepository,
-        TelegramMessageResponseRepository tmrrepository, SubscribeCryptoRespository screpository) {
-        this.cryptoCurrencyRepository = ccrepository;
-        this.cryptoCurrencyTrailRepository = cctrepository;
-        this.telegramMessageResponseRepository = tmrrepository;
-        this.subscribeCryptoRespository = screpository;
-    }
 
     @RequestMapping("/")
 	public String index() {
@@ -63,9 +61,9 @@ public class CryptoController {
         Boolean coinswitch = data.getCoinswitch();
         String otherdata = data.getOtherdata();
 
-        CryptoCurrency cco = cryptoCurrencyRepository.findByName(name);
-        if (cco != null) {
-            cc = cco;
+        Optional<CryptoCurrency> cco = cryptoCurrencyRepository.findByName(name);
+        if (!cco.isEmpty()) {
+            cc = cco.get();
         } else {
             logger.info(String.format("No Crypto Currency found with name %s \n", data.getName()));
         }
@@ -84,9 +82,8 @@ public class CryptoController {
         cct.setCurrency(currency);
         cryptoCurrencyTrailRepository.save(cct);
 
-        new TelegramNotifier(telegramMessageResponseRepository, subscribeCryptoRespository).checkAndNotify(
-            name,
-            price
+        new TelegramNotifier().checkAndNotify(
+            name
         );
 
         return cc;
@@ -101,16 +98,19 @@ public class CryptoController {
     PriceSummaryDTO priceHistory(@PathVariable String name) {
         LocalDateTime today = LocalDateTime.now();
         
-        CryptoCurrency cc = cryptoCurrencyRepository.findByName(name);
-        List<CryptoCurrencyTrail> cryptos = cryptoCurrencyTrailRepository.get7DayData(today.minusDays(7), cc);
-
+        Optional<CryptoCurrency> cc = cryptoCurrencyRepository.findByName(name);
         PriceSummaryDTO ps = new PriceSummaryDTO();
-        ps.setName(cc.getName());
-        ps.setDisplayName(cc.getDisplayName());
-        ps.setChange24h(cc.getChange24h());
-        ps.setPriceHistory(cryptos);
+        if (!cc.isEmpty()) {
+            CryptoCurrency cco = cc.get();
+            List<CryptoCurrencyTrail> cryptos = cryptoCurrencyTrailRepository.get7DayData(today.minusDays(7), cco);
 
-        return ps;
+            ps.setName(cco.getName());
+            ps.setDisplayName(cco.getDisplayName());
+            ps.setChange24h(cco.getChange24h());
+            ps.setPriceHistory(cryptos);
+
+        }
+        return ps;        
     }
 
 }

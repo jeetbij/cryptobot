@@ -2,6 +2,7 @@ package com.example.crypto.models;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
@@ -24,11 +25,12 @@ public class SubscribeCrypto {
 
   private Boolean active;
 
-  @NotNull
   private Double boughtIn;
 
-  @NotNull
   private Double notifyAt;
+
+  @Column(columnDefinition="TEXT")
+  private String telegramChatId;
 
   private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -70,6 +72,14 @@ public class SubscribeCrypto {
 
   public void setNotifyAt(Double notifyAt) {
     this.notifyAt = notifyAt;
+  }
+
+  public String getTelegramChatId() {
+    return telegramChatId;
+  }
+
+  public void setTelegramChatId(String chatId) {
+    this.telegramChatId = chatId;
   }
 
   public Boolean getActive() {
