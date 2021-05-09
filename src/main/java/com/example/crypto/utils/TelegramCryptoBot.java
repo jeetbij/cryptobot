@@ -35,7 +35,7 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
     //Messages
     private final String START_MESSAGE = "Hi! This bot updates you about cryptocurrency prices.\n\nTo see what this bot can do type command /help.";
     private final String AVAILABLE_CURRENCY_NAMES = "Available Crypto Currencies - \n%s";
-    private final String HELP_MESSAGE = "This bot updates you about cryptocurrency prices.\n\nYou can use below commands to control price updates.\n\n1. /subscribe <currency code from above list> - To subscribe to a currency price updates.\n\n2. /unsubscribe <currency code from above list> - To unsubscribe to a currency price updates.\n\n3. /list - To list all currency subscriptions.";
+    private final String HELP_MESSAGE = "This bot updates you about cryptocurrency prices.\n\nYou can use below commands to control price updates.\n\n1. /all - To list all available crypto currencies.\n\n2. /subscribe <currency code from above list> - To subscribe to a currency price updates.\n\n3. /unsubscribe <currency code from above list> - To unsubscribe to a currency price updates.\n\n4. /list - To list all currency subscriptions.";
     private final String UNRECOGNIZED_COMMAND = "Unrecognized command.";
     private final String SUBSCRIBED_MESSAGE = "Hola, you have subscribed to %s price updates for every 5 minute(s).";
     private final String ALREADY_SUBSCRIBED_MESSAGE = "You have already been subscribed to %s price updates.";
