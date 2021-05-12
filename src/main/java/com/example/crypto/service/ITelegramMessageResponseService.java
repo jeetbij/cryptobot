@@ -1,6 +1,6 @@
-package com.example.crypto.services;
+package com.example.crypto.service;
 
-import com.example.crypto.models.TelegramMessageResponse;
+import com.example.crypto.model.TelegramMessageResponse;
 
 public interface ITelegramMessageResponseService {
     

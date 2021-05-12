@@ -1,4 +1,4 @@
-package com.example.crypto.models;
+package com.example.crypto.model;
 
 import java.time.LocalDateTime;
 

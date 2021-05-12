@@ -2,7 +2,7 @@ package com.example.crypto.repository;
 
 import java.util.Optional;
 
-import com.example.crypto.models.CryptoCurrency;
+import com.example.crypto.model.CryptoCurrency;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

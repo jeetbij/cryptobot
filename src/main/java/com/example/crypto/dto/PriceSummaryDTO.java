@@ -1,9 +1,9 @@
-package com.example.crypto.dtos;
+package com.example.crypto.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.crypto.models.CryptoCurrencyTrail;
+import com.example.crypto.model.CryptoCurrencyTrail;
 
 public class PriceSummaryDTO {
     

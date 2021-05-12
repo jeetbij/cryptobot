@@ -1,4 +1,4 @@
-package com.example.crypto.controllers;
+package com.example.crypto.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.crypto.dtos.SubscribeCryptoDTO;
-import com.example.crypto.models.SubscribeCrypto;
+import com.example.crypto.dto.SubscribeCryptoDTO;
+import com.example.crypto.model.SubscribeCrypto;
 import com.example.crypto.repository.SubscribeCryptoRespository;
 import com.example.crypto.repository.TelegramMessageResponseRepository;
-import com.example.crypto.services.ISubscribeCryptoService;
-import com.example.crypto.utils.TelegramNotifier;
+import com.example.crypto.service.ISubscribeCryptoService;
+import com.example.crypto.util.TelegramNotifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

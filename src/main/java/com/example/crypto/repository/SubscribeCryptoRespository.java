@@ -3,7 +3,7 @@ package com.example.crypto.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.crypto.models.SubscribeCrypto;
+import com.example.crypto.model.SubscribeCrypto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

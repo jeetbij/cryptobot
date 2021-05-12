@@ -1,4 +1,4 @@
-package com.example.crypto.dtos;
+package com.example.crypto.dto;
 
 public class SubscribeCryptoDTO {
     

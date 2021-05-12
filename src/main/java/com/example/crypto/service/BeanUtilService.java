@@ -1,4 +1,4 @@
-package com.example.crypto.services;
+package com.example.crypto.service;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

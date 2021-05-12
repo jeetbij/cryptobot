@@ -1,4 +1,4 @@
-package com.example.crypto.utils;
+package com.example.crypto.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +14,16 @@ import java.util.Optional;
 
 import javax.ws.rs.core.UriBuilder;
 
-import com.example.crypto.models.CryptoCurrency;
-import com.example.crypto.models.SubscribeCrypto;
-import com.example.crypto.models.TelegramMessageResponse;
-import com.example.crypto.services.BeanUtilService;
-import com.example.crypto.services.CryptoCurrencyService;
-import com.example.crypto.services.ICryptoCurrencyService;
-import com.example.crypto.services.ISubscribeCryptoService;
-import com.example.crypto.services.ITelegramMessageResponseService;
-import com.example.crypto.services.SubscribeCryptoService;
-import com.example.crypto.services.TelegramMessageResponseService;
+import com.example.crypto.model.CryptoCurrency;
+import com.example.crypto.model.SubscribeCrypto;
+import com.example.crypto.model.TelegramMessageResponse;
+import com.example.crypto.service.BeanUtilService;
+import com.example.crypto.service.CryptoCurrencyService;
+import com.example.crypto.service.ICryptoCurrencyService;
+import com.example.crypto.service.ISubscribeCryptoService;
+import com.example.crypto.service.ITelegramMessageResponseService;
+import com.example.crypto.service.SubscribeCryptoService;
+import com.example.crypto.service.TelegramMessageResponseService;
 
 
 public class TelegramNotifier {

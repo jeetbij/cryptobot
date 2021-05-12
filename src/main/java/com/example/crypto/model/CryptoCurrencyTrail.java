@@ -1,7 +1,4 @@
-package com.example.crypto.models;
-
-import java.util.List;
-import java.util.ArrayList;
+package com.example.crypto.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,39 +6,34 @@ import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import javax.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 @Entity // This tells Hibernate to make a table out of this class
-@Table(name = "crypto_currency")
-public class CryptoCurrency {
+@Table(name = "crypto_currency_trail")
+public class CryptoCurrencyTrail {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @NotNull
-  private String name;
-
-  @NotNull
-  private String displayName;
+  @ManyToOne
+  @JoinColumn(name="crypto_currency_id")
+  private CryptoCurrency cryptoCurrency;
 
   @NotNull
   private Double price;
 
   @NotNull
-  private Double change24h;
-
-  @NotNull
   private String currency;
-
-  private Boolean coinswitch;
 
   @Column(columnDefinition="TEXT")
   private String otherdata;
 
-  @OneToMany(mappedBy = "cryptoCurrency")
-  private List<CryptoCurrencyTrail> cryptoCurrencyTrail = new ArrayList<>();
+  private final LocalDateTime createdAt = LocalDateTime.now();
 
   public Integer getId() {
     return id;
@@ -51,20 +43,12 @@ public class CryptoCurrency {
     this.id = id;
   }
 
-  public String getDisplayName() {
-    return displayName;
+  public CryptoCurrency getCryptoCurrency() {
+    return cryptoCurrency;
   }
 
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public void setCryptoCurrency(CryptoCurrency cryptoCurrency) {
+    this.cryptoCurrency = cryptoCurrency;
   }
 
   public Double getPrice() {
@@ -75,14 +59,6 @@ public class CryptoCurrency {
     this.price = price;
   }
 
-  public Double getChange24h() {
-    return change24h;
-  }
-
-  public void setChange24h(Double change24h) {
-    this.change24h = change24h;
-  }
-
   public String getCurrency() {
     return currency;
   }
@@ -91,12 +67,8 @@ public class CryptoCurrency {
     this.currency = currency;
   }
 
-  public Boolean getCoinswitch() {
-    return coinswitch;
-  }
-
-  public void setCoinswitch(Boolean coinswitch) {
-    this.coinswitch = coinswitch;
+  public LocalDateTime getCreatedAt() {
+      return createdAt;
   }
 
   public String getOtherdata() {

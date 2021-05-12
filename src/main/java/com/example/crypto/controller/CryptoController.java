@@ -1,4 +1,4 @@
-package com.example.crypto.controllers;
+package com.example.crypto.controller;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,19 +10,19 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.crypto.dtos.CryptoDTO;
-import com.example.crypto.dtos.PriceSummaryDTO;
-import com.example.crypto.models.CryptoCurrency;
-import com.example.crypto.models.CryptoCurrencyTrail;
+import com.example.crypto.dto.CryptoDTO;
+import com.example.crypto.dto.PriceSummaryDTO;
+import com.example.crypto.model.CryptoCurrency;
+import com.example.crypto.model.CryptoCurrencyTrail;
 import com.example.crypto.repository.CryptoCurrencyRepository;
 import com.example.crypto.repository.CryptoCurrencyTrailRepository;
 import com.example.crypto.repository.SubscribeCryptoRespository;
 import com.example.crypto.repository.TelegramMessageResponseRepository;
-import com.example.crypto.services.ICryptoCurrencyService;
-import com.example.crypto.services.ICryptoCurrencyTrailService;
-import com.example.crypto.services.ISubscribeCryptoService;
-import com.example.crypto.services.ITelegramMessageResponseService;
-import com.example.crypto.utils.TelegramNotifier;
+import com.example.crypto.service.ICryptoCurrencyService;
+import com.example.crypto.service.ICryptoCurrencyTrailService;
+import com.example.crypto.service.ISubscribeCryptoService;
+import com.example.crypto.service.ITelegramMessageResponseService;
+import com.example.crypto.util.TelegramNotifier;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +80,7 @@ public class CryptoController {
         cct.setCryptoCurrency(cc);
         cct.setPrice(price);
         cct.setCurrency(currency);
+        cct.setOtherdata(otherdata);
         cryptoCurrencyTrailRepository.save(cct);
 
         new TelegramNotifier().checkAndNotify(

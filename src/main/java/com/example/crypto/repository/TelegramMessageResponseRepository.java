@@ -1,6 +1,6 @@
 package com.example.crypto.repository;
 
-import com.example.crypto.models.TelegramMessageResponse;
+import com.example.crypto.model.TelegramMessageResponse;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

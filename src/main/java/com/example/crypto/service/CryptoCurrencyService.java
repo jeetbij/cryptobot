@@ -1,9 +1,9 @@
-package com.example.crypto.services;
+package com.example.crypto.service;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.example.crypto.models.CryptoCurrency;
+import com.example.crypto.model.CryptoCurrency;
 import com.example.crypto.repository.CryptoCurrencyRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;

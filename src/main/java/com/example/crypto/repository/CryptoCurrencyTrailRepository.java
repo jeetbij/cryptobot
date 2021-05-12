@@ -3,8 +3,8 @@ package com.example.crypto.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.crypto.models.CryptoCurrency;
-import com.example.crypto.models.CryptoCurrencyTrail;
+import com.example.crypto.model.CryptoCurrency;
+import com.example.crypto.model.CryptoCurrencyTrail;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

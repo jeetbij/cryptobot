@@ -1,6 +1,6 @@
 package com.example.crypto;
 
-import com.example.crypto.utils.TelegramCryptoBot;
+import com.example.crypto.util.TelegramCryptoBot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,16 +1,16 @@
-package com.example.crypto.utils;
+package com.example.crypto.util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.crypto.models.CryptoCurrency;
-import com.example.crypto.models.SubscribeCrypto;
-import com.example.crypto.services.BeanUtilService;
-import com.example.crypto.services.CryptoCurrencyService;
-import com.example.crypto.services.ICryptoCurrencyService;
-import com.example.crypto.services.ISubscribeCryptoService;
-import com.example.crypto.services.SubscribeCryptoService;
+import com.example.crypto.model.CryptoCurrency;
+import com.example.crypto.model.SubscribeCrypto;
+import com.example.crypto.service.BeanUtilService;
+import com.example.crypto.service.CryptoCurrencyService;
+import com.example.crypto.service.ICryptoCurrencyService;
+import com.example.crypto.service.ISubscribeCryptoService;
+import com.example.crypto.service.SubscribeCryptoService;
 
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -21,8 +21,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramCryptoBot extends TelegramLongPollingBot {
 
     //Bot information
-    private final String CRYPTO_BOT_TOKEN = "1721251982:AAGhhBO5RRQb7sCG4hE9yXz2cuB90uPqxe0";
-    // private final String CRYPTO_BOT_TOKEN = "1729919631:AAExAz2WRfbmWMFsNzRfBZBsHxXD9KDlCMc";
+    // private final String CRYPTO_BOT_TOKEN = "1721251982:AAGhhBO5RRQb7sCG4hE9yXz2cuB90uPqxe0";
+    private final String CRYPTO_BOT_TOKEN = "1729919631:AAExAz2WRfbmWMFsNzRfBZBsHxXD9KDlCMc";
     private final String CRYPTO_BOT_NAME = "CryptoBot";
 
     //Commands

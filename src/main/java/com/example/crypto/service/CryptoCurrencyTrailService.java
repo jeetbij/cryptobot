@@ -1,10 +1,10 @@
-package com.example.crypto.services;
+package com.example.crypto.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.crypto.models.CryptoCurrency;
-import com.example.crypto.models.CryptoCurrencyTrail;
+import com.example.crypto.model.CryptoCurrency;
+import com.example.crypto.model.CryptoCurrencyTrail;
 import com.example.crypto.repository.CryptoCurrencyTrailRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
