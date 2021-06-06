@@ -12,7 +12,6 @@ import com.example.crypto.service.ICryptoCurrencyService;
 import com.example.crypto.service.ISubscribeCryptoService;
 import com.example.crypto.service.SubscribeCryptoService;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -196,7 +195,8 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
         subscribeCryptoService.save(sc);
 
         String subscribers = redisClient.getAllEntriesForCurrency(currency);
-        subscribers = subscribers != null ? subscribers + "," : "";
+        subscribers = subscribers != null ? subscribers + " " : "";
+        subscribers = subscribers.trim();
         redisClient.addEntry(currency, subscribers + sc.getTelegramChatId());
 
         return true;
@@ -211,9 +211,9 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
             subscribeCryptoService.save(sc);
 
             String subscribers = redisClient.getAllEntriesForCurrency(currency);
-            subscribers = subscribers != null ? subscribers + "," : "";
-            subscribers.replaceAll(sc.getTelegramChatId(), "");
-            subscribers.replaceAll(",,", ",");
+            subscribers = subscribers != null ? subscribers + " " : "";
+            subscribers = subscribers.replaceAll(sc.getTelegramChatId(), "");
+            subscribers = subscribers.trim();
             redisClient.addEntry(currency, subscribers);
 
             return true;

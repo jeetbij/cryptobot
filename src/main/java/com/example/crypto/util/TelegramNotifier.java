@@ -85,17 +85,15 @@ public class TelegramNotifier {
                 subscribers = "";
                 List<SubscribeCrypto> subs = subscribeCryptoRespository.findByCurrency(cryptoCurrency.getName());
                 for (SubscribeCrypto sub : subs) {
-                        subscribers += String.format("%s,", sub.getTelegramChatId());
+                        subscribers += String.format("%s ", sub.getTelegramChatId());
                 }
                 if (subscribers.length() > 0) {
                         subscribers = subscribers.substring(0, subscribers.length() - 1);
                 }
+                subscribers = subscribers.trim();
                 redisClient.addEntry(cryptoCurrency.getName(), subscribers);
         }
-        String[] scs = subscribers.split(",");
-        System.out.println("Redis Subscribers");
-        System.out.println(subscribers);
-        System.out.println(scs.length);
+        String[] scs = subscribers.split(" ");
         for(Integer i=0; i<scs.length; i++) {
                 String chatId = scs[i];
                 
