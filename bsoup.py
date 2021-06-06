@@ -106,4 +106,4 @@ while(True):
         send_crypto_updates_to_server()
     except Exception as e:
         print(e)
-    time.sleep(60)
+    time.sleep(5*60)
