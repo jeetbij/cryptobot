@@ -12,6 +12,7 @@ import com.example.crypto.service.ICryptoCurrencyService;
 import com.example.crypto.service.ISubscribeCryptoService;
 import com.example.crypto.service.SubscribeCryptoService;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,8 +22,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramCryptoBot extends TelegramLongPollingBot {
 
     //Bot information
-    // private final String CRYPTO_BOT_TOKEN = "1721251982:AAGhhBO5RRQb7sCG4hE9yXz2cuB90uPqxe0";
-    private final String CRYPTO_BOT_TOKEN = "1729919631:AAExAz2WRfbmWMFsNzRfBZBsHxXD9KDlCMc";
+    private final String CRYPTO_BOT_TOKEN = "1721251982:AAGhhBO5RRQb7sCG4hE9yXz2cuB90uPqxe0";
+    // private final String CRYPTO_BOT_TOKEN = "1729919631:AAExAz2WRfbmWMFsNzRfBZBsHxXD9KDlCMc"; //test
     private final String CRYPTO_BOT_NAME = "CryptoBot";
 
     //Commands
@@ -48,6 +49,8 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
     //Repositories
     private ISubscribeCryptoService subscribeCryptoService = BeanUtilService.getBean(SubscribeCryptoService.class);
     private ICryptoCurrencyService cryptoCurrencyService = BeanUtilService.getBean(CryptoCurrencyService.class);
+
+    RedisClient redisClient = new RedisClient();
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -192,6 +195,10 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
         sc.setTelegramUserId(userId);
         subscribeCryptoService.save(sc);
 
+        String subscribers = redisClient.getAllEntriesForCurrency(currency);
+        subscribers = subscribers != null ? subscribers + "," : "";
+        redisClient.addEntry(currency, subscribers + sc.getTelegramChatId());
+
         return true;
     }
 
@@ -202,6 +209,13 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
             SubscribeCrypto sc = sco.get();
             sc.setActive(false);
             subscribeCryptoService.save(sc);
+
+            String subscribers = redisClient.getAllEntriesForCurrency(currency);
+            subscribers = subscribers != null ? subscribers + "," : "";
+            subscribers.replaceAll(sc.getTelegramChatId(), "");
+            subscribers.replaceAll(",,", ",");
+            redisClient.addEntry(currency, subscribers);
+
             return true;
         }
         return false;

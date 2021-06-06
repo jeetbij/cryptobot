@@ -9,6 +9,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ import com.example.crypto.service.TelegramMessageResponseService;
 public class TelegramNotifier {
 
     private final String CRYPTO_BOT_TOKEN = "1721251982:AAGhhBO5RRQb7sCG4hE9yXz2cuB90uPqxe0";
-    private final String CRYPTO_UPDATES_GROUP_CHAT_ID = "-1001162020470";
+//     private final String CRYPTO_UPDATES_GROUP_CHAT_ID = "-1001162020470";
 
     private final String PRICE_UPDATE_MESSAGE = "**%s** -\n\nCurrent Price - %s\nChange(24h in percentage) - %s";
 
@@ -39,31 +40,77 @@ public class TelegramNotifier {
 
     Logger logger = LoggerFactory.getLogger(TelegramNotifier.class);
 
+    private RedisClient redisClient = new RedisClient();
+
     
     public void checkAndNotify(String cc) {
-        List<SubscribeCrypto> scs = subscribeCryptoRespository.findByCurrency(cc);
+        // List<SubscribeCrypto> scs = subscribeCryptoRespository.findByCurrency(cc);
         Optional<CryptoCurrency> cco = cryptoCurrencyRespository.findByName(cc);
         CryptoCurrency cryptoCurrency = cco.get();
-
+        checkAndNotifyRedis(cryptoCurrency);
+        return;
         // logger.info(String.format("Checking price diffrence for %s and current price %s \n", cc, price));
 
-        logger.info(String.format("Sending notification for %s and current price %s \n", cryptoCurrency.getDisplayName(), cryptoCurrency.getPrice()));
+        // logger.info(String.format("Sending notification for %s and current price %s \n", cryptoCurrency.getDisplayName(), cryptoCurrency.getPrice()));
 
-        for(Integer i=0; i<scs.size(); i++) {
-                SubscribeCrypto sc = scs.get(i);
+        // for(Integer i=0; i<scs.size(); i++) {
+        //         SubscribeCrypto sc = scs.get(i);
+                
+        //         // Double expectedIncreaseInPrice = sc.getBoughtIn() + (sc.getBoughtIn()*sc.getNotifyAt())%100;
+        //         // logger.info(String.format("Expected increase in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedIncreaseInPrice));
+                
+        //         // Double expectedDecreaseInPrice = sc.getBoughtIn() - (sc.getBoughtIn()*sc.getNotifyAt())%100;
+        //         // logger.info(String.format("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice));
+        //         if(sc.getTelegramChatId() == null) {
+        //                 continue;
+        //         }
+        //         try {
+        //                 String message = String.format(PRICE_UPDATE_MESSAGE, cryptoCurrency.getDisplayName(), cryptoCurrency.getPrice(), cryptoCurrency.getChange24h());
+        //                 logger.info(String.format("TELEGRAM:: message - %s, username - %s, chatId - %s\n", message, sc.getUser(), sc.getTelegramChatId()));
+        //                 sendMessage(message, sc.getTelegramChatId());
+        //                 // sendWhatsappMessage(message);
+        //         } catch (IOException e) {
+        //                 // TODO Auto-generated catch block
+        //                 e.printStackTrace();
+        //         } catch (InterruptedException e) {
+        //                 // TODO Auto-generated catch block
+        //                 e.printStackTrace();
+        //         } 
+        // }
+    }
+
+    public void checkAndNotifyRedis(CryptoCurrency cryptoCurrency) {
+        String subscribers = redisClient.getAllEntriesForCurrency(cryptoCurrency.getName());
+        if (subscribers == null) {
+                subscribers = "";
+                List<SubscribeCrypto> subs = subscribeCryptoRespository.findByCurrency(cryptoCurrency.getName());
+                for (SubscribeCrypto sub : subs) {
+                        subscribers += String.format("%s,", sub.getTelegramChatId());
+                }
+                if (subscribers.length() > 0) {
+                        subscribers = subscribers.substring(0, subscribers.length() - 1);
+                }
+                redisClient.addEntry(cryptoCurrency.getName(), subscribers);
+        }
+        String[] scs = subscribers.split(",");
+        System.out.println("Redis Subscribers");
+        System.out.println(subscribers);
+        System.out.println(scs.length);
+        for(Integer i=0; i<scs.length; i++) {
+                String chatId = scs[i];
                 
                 // Double expectedIncreaseInPrice = sc.getBoughtIn() + (sc.getBoughtIn()*sc.getNotifyAt())%100;
                 // logger.info(String.format("Expected increase in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedIncreaseInPrice));
                 
                 // Double expectedDecreaseInPrice = sc.getBoughtIn() - (sc.getBoughtIn()*sc.getNotifyAt())%100;
                 // logger.info(String.format("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice));
-                if(sc.getTelegramChatId() == null) {
+                if(chatId == null || chatId == "" || chatId.isEmpty() || chatId.isBlank()) {
                         continue;
                 }
                 try {
                         String message = String.format(PRICE_UPDATE_MESSAGE, cryptoCurrency.getDisplayName(), cryptoCurrency.getPrice(), cryptoCurrency.getChange24h());
-                        logger.info(String.format("TELEGRAM:: message - %s, username - %s, chatId - %s\n", message, sc.getUser(), sc.getTelegramChatId()));
-                        sendMessage(message, sc.getTelegramChatId());
+                        logger.info(String.format("TELEGRAM:: message - %s, chatId - %s\n", message, chatId));
+                        sendMessage(message, chatId);
                         // sendWhatsappMessage(message);
                 } catch (IOException e) {
                         // TODO Auto-generated catch block

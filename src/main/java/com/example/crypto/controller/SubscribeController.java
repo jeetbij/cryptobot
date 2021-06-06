@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@RestController
+// @RestController
 public class SubscribeController {
 
     Logger logger = LoggerFactory.getLogger(SubscribeController.class);
