@@ -196,8 +196,9 @@ public class TelegramCryptoBot extends TelegramLongPollingBot {
 
         String subscribers = redisClient.getAllEntriesForCurrency(currency);
         subscribers = subscribers != null ? subscribers + " " : "";
+        subscribers = subscribers + sc.getTelegramChatId();
         subscribers = subscribers.trim();
-        redisClient.addEntry(currency, subscribers + sc.getTelegramChatId());
+        redisClient.addEntry(currency, subscribers);
 
         return true;
     }
