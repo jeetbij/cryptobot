@@ -104,7 +104,7 @@ public class TelegramNotifier {
                 
                 // Double expectedDecreaseInPrice = sc.getBoughtIn() - (sc.getBoughtIn()*sc.getNotifyAt())%100;
                 // logger.info(String.format("Expected decrease in price calculated for %s and current price %s, expected price - %s \n", cc, price, expectedDecreaseInPrice));
-                if(chatId == null || chatId == "" || chatId.isEmpty() || chatId.isBlank()) {
+                if(chatId == null || chatId == "" || chatId.isEmpty() || chatId.isBlank() || chatId == "null") {
                         continue;
                 }
                 try {
